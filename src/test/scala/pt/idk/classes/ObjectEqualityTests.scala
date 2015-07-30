@@ -2,8 +2,16 @@ package pt.idk.classes
 
 import org.scalatest.Matchers
 import org.scalatest.FlatSpec
+import scala.collection.immutable.HashSet
 
 class EqualsTests extends FlatSpec with Matchers {
+
+  /*
+   * = Object Equality =
+   * 
+   * The following tests show how are objects compared in Scala, assuming the
+   * 'equals' method is correctly implemented.
+   */
 
   "Two points with the same coordinates" should "be equal" in {
     val p1 = new Point(1, 0)
@@ -53,4 +61,61 @@ class EqualsTests extends FlatSpec with Matchers {
     assert(s1 ne s3)
   }
 
+  /*
+   * = Override equals pitfalls = 
+   * 
+   * The following tests show the pitfalls of implementing the 'equals' method.
+   */
+
+  "Defining 'equals' with the wrong signature" should "not override the " +
+    "'Any.equals' method, giving unexpected results" in {
+      val a = new PointBadEquals(1, 0)
+      val b = new PointBadEquals(1, 0)
+
+      /*
+       * The 'equals' operator will call 'equals(o: PointBadEquals)' method
+       * because both 'a' and 'b' are 'PointBadEquals'.
+       */
+      assert(a equals b)
+
+      /*
+       * The '==' method will call the inherited 'equals(o: Any)' method, not
+       * the 'equals(o: PointBadEquals)' method.
+       * 
+       * The default implementation of [[Any.equals]] is to compare objects by
+       * reference. Since 'a' and 'b' reference different objects, the
+       * expression will return 'false'.
+       */
+      assert(!(a == b))
+      
+      /*
+       * Always use the 'override' keyword to avoid this pitfall. If a method
+       * is not being overridden, the code will not compile.
+       */
+    }
+}
+
+/**
+ * A two dimensional point.
+ *
+ * The definition of the `equals` method is purposely defined with the wrong
+ * signature, meaning that the inherited [[Any.equals]] method has not been
+ * overridden. One consequence of this is that the [[Any.==]] method will
+ * compare objects with the default implementation, that is, the objects will
+ * be compared by reference, not value.
+ *
+ * One way to avoid this pitfall is to always use the `override` keyword. If
+ * the `override` keyword is used and nothing is being overridden, the code will
+ * not compile.
+ */
+class PointBadEquals(val x: Int, val y: Int) {
+
+  /**
+   * Compares this object with the given object for equivalence.
+   *
+   * This method does not override the [[Any.equals]] method on purpose. This
+   * is to show one of the common pitfalls when overriding `equals`, namely
+   * defining `equals` with the wrong signature.
+   */
+  def equals(other: PointBadEquals): Boolean = x == other.x && y == other.y
 }
