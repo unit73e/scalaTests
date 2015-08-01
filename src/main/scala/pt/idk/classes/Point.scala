@@ -1,9 +1,13 @@
 package pt.idk.classes
 
+object Point {
+  def apply(x: Int, y: Int): Point = new Point(x, y)
+}
+
 class Point(val x: Int, val y: Int) extends Equals {
-  
+
   def move(x: Int, y: Int): Point = new Point(this.x + x, this.y + y)
-  
+
   override def toString(): String = "(" + x + ", " + y + ")"
 
   def canEqual(other: Any) = {
