@@ -93,6 +93,74 @@ class EqualsTests extends FlatSpec with Matchers {
        * is not being overridden, the code will not compile.
        */
     }
+
+  "Defining 'equals' but not 'hashCode'" should "returns unexpected results " +
+    "when using hash based collections" in {
+      /*
+       * Creates two points with the same coordinates.
+       */
+      // TODO: Create Point trait
+      val p1 = new PointNoHashCode(1, 0)
+      val p2 = new PointNoHashCode(1, 0)
+
+      /*
+       * The 'equals' method was redefined so that two points with the same
+       * coordinates are equal. This means points 'p1' and 'p2' should be equal
+       * because they have the same coordinates.
+       * 
+       */
+      assert(p1 == p2)
+
+      /*
+       * Creates an 'HashSet' with a single element 'p1'.
+       */
+      val h = HashSet(p1)
+
+      /*
+       * As expected, 'h' should contain 'p1'.
+       */
+      assert(h contains p1)
+
+      /*
+       * Since 'p1' and 'p2' are equal, it is reasonable to think 'h' should
+       * also contain 'p2'. Nonetheless 'h contains p2' will most probably
+       * return false. In fact this is not 100% guaranteed.
+       * 
+       * This unexpected result should be made clear if the 'contains'
+       * implementation of 'HashSet' is known. Elements of an 'HashSet' are put
+       * into hash buckets based on their hash codes. The 'contains' test first
+       * determines the hash bucket to look into and then checks if the given
+       * element is in the hash bucket. The problem is that if the element being
+       * searched returns a wrong hash code, the 'contains' method will look
+       * into the wrong hash bucket.
+       * 
+       * The Point 'hasCode' method was not redefined, meaning it will use
+       * the default implementation inherited from 'AnyRef'. By default,
+       * 'hashCode' returns a transformation of the address of the allocated
+       * object. This means 'p1' and 'p2' will almost certainly have different
+       * hash codes. Different hash codes have a high probability of different
+       * hash buckets in a set. So even if 'p1' and 'p2' are equal, they will
+       * likely give different hash buckets in a set.
+       * 
+       * In summary, what happens when 'h contains p2' is executed is the
+       * following. First, the bucket that corresponds to 'p2' hash code is
+       * looked into. Most likely 'p1' is is another bucket, so it will never
+       * be found, returning false. Still, there's a low chance that 'p1' ends
+       * up being in the same bucket as 'p2' and in that case it will be found,
+       * returning true.
+       * 
+       * To fix this problem 'hashCode' must be defined as described in its
+       * contract:
+       * 
+       *   If two objects are equal according to the equals method, then
+       *   calling the hashCode method on each of the two objects must
+       *   produce the same integer result.
+       * 
+       * Every time 'equals' is redefined 'hashCode' must also be redefined so
+       * that the contract is not breached.
+       */
+      assert(!(h contains p2))
+    }
 }
 
 /**
@@ -122,12 +190,12 @@ class PointBadEquals(val x: Int, val y: Int) {
 
 /**
  * A two dimensional point.
- * 
- * This class does not override `hashCode` on purpose. This 
+ *
+ * This class does not override `hashCode` on purpose.
  */
 class PointNoHashCode(val x: Int, val y: Int) {
   override def equals(other: Any): Boolean = other match {
-    case that: Point => x == that.x && y == that.y
+    case that: PointNoHashCode => x == that.x && y == that.y
     case _ => false
   }
 }
