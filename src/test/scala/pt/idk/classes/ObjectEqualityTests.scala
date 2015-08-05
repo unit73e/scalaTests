@@ -14,8 +14,8 @@ class EqualsTests extends FlatSpec with Matchers {
    */
 
   "Two points with the same coordinates" should "be equal" in {
-    val p1 = Point(1, 0)
-    val p2 = Point(1, 0)
+    val p1 = new BasicPoint(1, 0)
+    val p2 = new BasicPoint(1, 0)
 
     /*
      * The '==' operator compares the value of two objects.
@@ -34,9 +34,9 @@ class EqualsTests extends FlatSpec with Matchers {
   }
 
   "The 'eq' and 'ne' operators" should "test reference equality" in {
-    val s1 = Point(1, 0)
+    val s1 = new BasicPoint(1, 0)
     val s2 = s1
-    val s3 = Point(1, 0)
+    val s3 = new BasicPoint(1, 0)
 
     /*
      * The 'a eq b' returns true if 'a' and 'b' reference the same object.
@@ -161,41 +161,4 @@ class EqualsTests extends FlatSpec with Matchers {
        */
       assert(!(h contains p2))
     }
-}
-
-/**
- * A two dimensional point.
- *
- * The definition of the `equals` method is purposely defined with the wrong
- * signature, meaning that the inherited [[Any.equals]] method has not been
- * overridden. One consequence of this is that the [[Any.==]] method will
- * compare objects with the default implementation, that is, the objects will
- * be compared by reference, not value.
- *
- * One way to avoid this pitfall is to always use the `override` keyword. If
- * the `override` keyword is used and nothing is being overridden, the code will
- * not compile.
- */
-class PointBadEquals(val x: Int, val y: Int) {
-
-  /**
-   * Compares this object with the given object for equivalence.
-   *
-   * This method does not override the [[Any.equals]] method on purpose. This
-   * is to show one of the common pitfalls when overriding `equals`, namely
-   * defining `equals` with the wrong signature.
-   */
-  def equals(other: PointBadEquals): Boolean = x == other.x && y == other.y
-}
-
-/**
- * A two dimensional point.
- *
- * This class does not override `hashCode` on purpose.
- */
-class PointNoHashCode(val x: Int, val y: Int) {
-  override def equals(other: Any): Boolean = other match {
-    case that: PointNoHashCode => x == that.x && y == that.y
-    case _ => false
-  }
 }
