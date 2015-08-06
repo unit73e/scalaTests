@@ -94,8 +94,8 @@ class EqualsTests extends FlatSpec with Matchers {
        */
     }
 
-  "Defining 'equals' but not 'hashCode'" should "returns unexpected results " +
-    "when using hash based collections" in {
+  "Redefining 'equals' but not 'hashCode'" should
+    "returns unexpected results when using hash based collections" in {
       /*
        * Creates two points with the same coordinates.
        */
@@ -160,5 +160,51 @@ class EqualsTests extends FlatSpec with Matchers {
        * that the contract is not breached.
        */
       assert(!(h contains p2))
+    }
+
+  "Definiting 'equals' or 'hashCode' based on mutable fields" should
+    "return unexpected results when using hash based collections" in {
+      /*
+       * Creates a new point. This particular implementation of point defines
+       * 'equals' and 'hashCode' in terms of mutable fields.
+       */
+      val p = new PointMutableEquals(1, 2)
+
+      /*
+       * Creates a new hash set with 'p' as its only element.
+       */
+      val h = HashSet(p)
+
+      /*
+       * As expected 'h' should contain 'p'.
+       */
+      assert(h contains p)
+
+      /*
+       * Point 'p' should be contained in 'h' even one of its coordinates is
+       * modified. However, 'h contains p' returns false after changing one of
+       * 'p' coordinates.
+       */
+      p.x += 1
+      assert(!(h contains p))
+
+      /*
+       * Point 'p' still exists in 'h' but cannot be found using 'contains'
+       * test. One way to prove this is by comparing each element of 'h' with
+       * 'p'.
+       */
+      assert(h.iterator contains p)
+
+      /*
+       * The problem is that by changing one of 'p' coordinates, the hash code
+       * will not be the same anymore.
+       * 
+       * The hash code of 'p' is calculated in terms of its coordinates. If the
+       * coordinates as modified, so is the hash code. Problem is that 'p' was
+       * put into the hash set based on one hash code and is being searched
+       * with another hash code.
+       * 
+       * Never redefine 'equals' or 'hashCode' based on mutable objects.
+       */
     }
 }
