@@ -69,7 +69,7 @@ class ObjectEqualityPitfallsTests extends FlatSpec with Matchers {
     }
 
   "Redefining 'equals' but not 'hashCode'" should
-    "returns unexpected results when using hash based collections" in {
+    "return unexpected results when using hash based collections" in {
       /*
        * If two objects are equal, both objects must return the same hash code.
        * A correct 'hashCode' implementation is essential for collections based
