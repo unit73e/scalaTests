@@ -17,7 +17,7 @@ class PointBadEquals(val x: Int, val y: Int) extends Point {
 
   override def move(x: Int, y: Int): Point =
     new PointBadEquals(this.x + x, this.y + y)
-  
+
   /**
    * Compares this object with the given object for equivalence.
    *
@@ -25,7 +25,7 @@ class PointBadEquals(val x: Int, val y: Int) extends Point {
    * is to show one of the common pitfalls when overriding `equals`, namely
    * defining `equals` with the wrong signature.
    */
-  def equals(other: PointBadEquals): Boolean =
+  def equals(other: Point): Boolean =
     x == other.x && y == other.y
-  
+
 }
