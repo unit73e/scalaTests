@@ -11,3 +11,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Point example
 - Object equality tests
 - Object equality pitfall tests
+
+## [1.1.0] - 2015-08-13
+
+### Added
+
+- Literals tests
