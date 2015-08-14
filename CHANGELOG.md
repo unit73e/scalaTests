@@ -17,3 +17,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Literals tests
+- Basic types tests
